@@ -1,10 +1,12 @@
 package com.shopping.microservices.product.controller;
 
 import com.shopping.microservices.product.dto.ProductRequest;
+import com.shopping.microservices.product.dto.ProductResponse;
 import com.shopping.microservices.product.model.Product;
 import com.shopping.microservices.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,14 +20,20 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product createProduct(@RequestBody ProductRequest productRequest){
+    public ProductResponse createProduct(@RequestBody ProductRequest productRequest){
        return productService.createProduct(productRequest);
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Product> getAllProducts(){
-        return productService.getAllProducts();
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        List<ProductResponse> products = productService.getAllProducts();
+
+        if (products.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 204
+        }
+
+        return ResponseEntity.ok(products); // 200
     }
+
 
 }

@@ -1,6 +1,7 @@
 package com.shopping.microservices.product.service;
 
 import com.shopping.microservices.product.dto.ProductRequest;
+import com.shopping.microservices.product.dto.ProductResponse;
 import com.shopping.microservices.product.model.Product;
 import com.shopping.microservices.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public Product createProduct(ProductRequest productRequest) {
+    public ProductResponse createProduct(ProductRequest productRequest) {
        Product product= Product.builder()
                .name(productRequest.name())
                .description(productRequest.description())
@@ -24,9 +25,13 @@ public class ProductService {
                .build();
        productRepository.save(product);
        log.info("Product Created successfully");
-       return product;
+       return new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice());
     }
-    public List<Product> getAllProducts(){
-        return productRepository.findAll();
+    public List<ProductResponse> getAllProducts(){
+
+        return productRepository.findAll()
+                .stream()
+                .map(product ->new ProductResponse(product.getId(), product.getName(), product.getDescription(), product.getPrice()))
+                .toList();
     }
 }
